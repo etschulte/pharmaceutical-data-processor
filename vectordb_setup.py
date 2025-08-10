@@ -1,8 +1,3 @@
-"""
-RAG Setup Script for Pharmaceutical Data Extraction
-Run this script once to build your vector database from the reference Excel file.
-"""
-
 import pandas as pd
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
@@ -12,15 +7,7 @@ import os
 
 def build_vector_db(reference_excel_path, persist_directory="./chroma_db"):
     """
-    Build vector database from reference Excel with pharmaceutical data columns:
-    - raw_antibiotic_name
-    - raw_dose_quantity
-    - patient_instructions
-    - clean_antibiotic_name
-    - clean_dose
-    - clean_unit_of_measure
-    - clean_frequency
-    - clean_duration
+    Build vector database from reference Excel
     """
 
     print(f"Loading reference data from: {reference_excel_path}")
