@@ -1,0 +1,6 @@
+gpt-oss:20b                 f2b8351c629c    13 GB     9 minutes ago
+nomic-embed-text:latest     0a109f422b47    274 MB    2 days ago
+qwen3:14b                   bdbd181c33f2    9.3 GB    3 weeks ago
+qwen3:32b                   030ee887880f    20 GB     3 weeks ago
+mxbai-embed-large:latest    468836162de7    669 MB    4 weeks ago
+llama3.2:latest             a80c4f17acd5    2.0 GB    4 weeks ago
