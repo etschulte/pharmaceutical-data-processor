@@ -7,8 +7,7 @@ import time
 from tkinter import messagebox
 
 from data_processor import DataProcessor, ProcessingConfig
-from ui_components import FileSelectionPanel, DataPreview, ProcessingControls, StatusDisplay, ProcessingSummary, \
-    SettingsPanel
+from ui_components import FileSelectionPanel, DataPreview, ProcessingControls, StatusDisplay, ProcessingSummary, SettingsPanel
 
 
 class PharmApp:
@@ -50,7 +49,7 @@ class PharmApp:
         title.grid(row=0, column=0, pady=(0, 30))
 
         # File selection panel (aligned inputs)
-        self.file_panel = FileSelectionPanel(main_frame, self._on_file_selected)
+        self.file_panel = FileSelectionPanel(main_frame, self.on_file_selected)
         self.file_panel.grid(row=1, column=0, sticky="ew", pady=10)
 
         # Processing controls (output filename above model selection)
@@ -87,7 +86,7 @@ class PharmApp:
         self.settings = SettingsPanel(main_frame)
         self.settings.grid(row=7, column=0, sticky="ew", pady=20)
 
-    def _on_file_selected(self, file_path: str):
+    def on_file_selected(self, file_path: str):
         """Handle file selection - load and preview data"""
         success, message = self.data_preview.load_from_file(file_path)
         if success:
@@ -120,11 +119,11 @@ class PharmApp:
         self.status_display.update_progress(0)
 
         # Start processing thread
-        thread = threading.Thread(target=self._process_data_thread)
+        thread = threading.Thread(target=self.process_data_thread)
         thread.daemon = True
         thread.start()
 
-    def _process_data_thread(self):
+    def process_data_thread(self):
         """Process data in separate thread"""
         start_time = time.time()
         try:
@@ -163,15 +162,14 @@ class PharmApp:
             chunks_processed = math.ceil(rows_processed / config.chunk_size)
 
             # Update UI with results
-            self.root.after(0, lambda: self._processing_complete(result_df, processing_time, rows_processed,
-                                                                 chunks_processed))
+            self.root.after(0, lambda: self.processing_complete(result_df, processing_time, rows_processed,
+                                                                chunks_processed))
 
         except Exception as e:
             error_msg = f"Error during processing: {e}"
-            self.root.after(0, lambda: self._processing_error(error_msg))
+            self.root.after(0, lambda: self.processing_error(error_msg))
 
-    def _processing_complete(self, result_df: pd.DataFrame, processing_time: float, rows_processed: int,
-                             chunks_processed: int):
+    def processing_complete(self, result_df: pd.DataFrame, processing_time: float, rows_processed: int, chunks_processed: int):
         """Handle processing completion"""
         self.status_display.update_progress(1.0)
         self.status_display.update_status(f"✅ Processing complete! Processed {len(result_df)} rows.")
@@ -189,7 +187,7 @@ class PharmApp:
         self.processing = False
         self.controls.set_processing_state(False)
 
-    def _processing_error(self, error_msg: str):
+    def processing_error(self, error_msg: str):
         """Handle processing error"""
         messagebox.showerror("Processing Error", error_msg)
         self.status_display.update_status("❌ Error occurred")

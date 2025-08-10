@@ -47,26 +47,22 @@ class DataProcessor:
         # Initialize model
         self.model = self.choose_model(self.config.model_num)
 
-    def load_data(self, file_path: str) -> pd.DataFrame:
+    def load_data(self, file_path: str):
         """Load data from Excel file"""
         return pd.read_excel(file_path)
 
-    def split_data_into_chunks(self, df: pd.DataFrame) -> List[pd.DataFrame]:
+    def split_data_into_chunks(self, df: pd.DataFrame):
         """Split dataframe into processing chunks"""
         chunk_amount = math.ceil(len(df) / self.config.chunk_size)
         return np.array_split(df, chunk_amount)
 
-    def process_data(self, file_path: str, progress_callback: Optional[Callable] = None) -> pd.DataFrame:
+    def process_data(self, file_path: str, progress_callback: Optional[Callable] = None):
         """
         Main processing method
-
-        Args:
-            file_path: Path to input Excel file
-            progress_callback: Optional callback function for progress updates
-
-        Returns:
-            Processed DataFrame with extracted data
+        file_path: Path to input Excel file
+        progress_callback: Optional callback function for progress updates
         """
+
         # Initialize systems
         if progress_callback:
             progress_callback("Initializing RAG system...")
@@ -86,7 +82,7 @@ class DataProcessor:
                 progress_callback(f"Processing chunk {i + 1} of {len(chunks)}...", progress)
 
             try:
-                result = self._process_chunk(chunk)
+                result = self.process_chunk(chunk)
                 results.append(result)
             except Exception as e:
                 print(f"Error processing chunk {i}: {e}")
@@ -95,9 +91,9 @@ class DataProcessor:
         # Parse and return results
         if progress_callback:
             progress_callback("Finalizing results...")
-        return self._parse_results(results)
+        return self.parse_results(results)
 
-    def _process_chunk(self, chunk: pd.DataFrame) -> 'ChainResult':
+    def process_chunk(self, chunk: pd.DataFrame):
         """Process a single chunk of data"""
 
         # Convert chunk to searchable text
@@ -107,20 +103,20 @@ class DataProcessor:
         )
 
         # Get reference examples from RAG
-        reference_examples = self._get_reference_examples(chunk_text)
+        reference_examples = self.get_reference_examples(chunk_text)
 
         # Create and invoke chain
-        chain = self._create_processing_chain()
+        chain = self.create_processing_chain()
         result = chain.invoke({
             "data": chunk_text,
             "reference": reference_examples,
-            "prompt": self._get_extraction_prompt(),
-            "format": self._get_format_instructions()
+            "prompt": self.get_extraction_prompt(),
+            "format": self.get_format_instructions()
         })
 
         return result
 
-    def _get_reference_examples(self, chunk_text: str) -> str:
+    def get_reference_examples(self, chunk_text: str) -> str:
         """Get reference examples from vector store"""
         try:
             docs = self.vectorstore.similarity_search(chunk_text, k=self.config.similarity_search_k)
@@ -145,7 +141,7 @@ class DataProcessor:
             print(f"Error in similarity search: {e}")
             return "No reference data available"
 
-    def _create_processing_chain(self):
+    def create_processing_chain(self):
         """Create the LLM processing chain"""
 
 
@@ -170,7 +166,7 @@ class DataProcessor:
         prompt = ChatPromptTemplate.from_template(template)
         return prompt | self.model
 
-    def _get_extraction_prompt(self) -> str:
+    def get_extraction_prompt(self) -> str:
         """Get the extraction prompt"""
         return (
             "For every row in the data extract the daily frequency, dose amount in mg, and duration values in numeric values. "
@@ -178,11 +174,11 @@ class DataProcessor:
             "If there are any values you are unsure of, put a 0. /no think"
         )
 
-    def _get_format_instructions(self) -> str:
+    def get_format_instructions(self) -> str:
         """Get format instructions"""
         return "Comma separated list with daily frequency, dose amount in mg, and duration values. No units. New line after every row."
 
-    def _parse_results(self, results: List) -> pd.DataFrame:
+    def parse_results(self, results: List) -> pd.DataFrame:
         """Parse LLM results into final DataFrame"""
         parsed_rows = []
         for result in results:

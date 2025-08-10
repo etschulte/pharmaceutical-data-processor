@@ -22,7 +22,7 @@ class FileSelectionPanel(ctk.CTkFrame):
         self.input_entry = ctk.CTkEntry(self, width=400, placeholder_text="Select Excel file...")
         self.input_entry.grid(row=0, column=1, sticky="ew", padx=(0, 10), pady=5)
 
-        input_btn = ctk.CTkButton(self, text="Browse", command=self._browse_input, width=100)
+        input_btn = ctk.CTkButton(self, text="Browse", command=self.browse_input, width=100)
         input_btn.grid(row=0, column=2, pady=5)
 
         # Output directory selection
@@ -32,14 +32,14 @@ class FileSelectionPanel(ctk.CTkFrame):
         self.output_entry = ctk.CTkEntry(self, width=400, placeholder_text="Select output directory...")
         self.output_entry.grid(row=1, column=1, sticky="ew", padx=(0, 10), pady=5)
 
-        output_btn = ctk.CTkButton(self, text="Browse", command=self._browse_output, width=100)
+        output_btn = ctk.CTkButton(self, text="Browse", command=self.browse_output, width=100)
         output_btn.grid(row=1, column=2, pady=5)
 
         # Store paths
         self.input_path = ""
         self.output_path = ""
 
-    def _browse_input(self):
+    def browse_input(self):
         path = filedialog.askopenfilename(
             title="Select Excel File",
             filetypes=[("Excel files", "*.xlsx *.xls"), ("All files", "*.*")]
@@ -51,7 +51,7 @@ class FileSelectionPanel(ctk.CTkFrame):
             if self.file_change_callback:
                 self.file_change_callback(path)
 
-    def _browse_output(self):
+    def browse_output(self):
         path = filedialog.askdirectory(title="Select Output Directory")
         if path:
             self.output_path = path
@@ -85,10 +85,10 @@ class FileSelector(ctk.CTkFrame):
         self.entry.grid(row=0, column=1, sticky="ew", padx=(0, 10))
 
         # Browse button
-        self.browse_btn = ctk.CTkButton(self, text="Browse", command=self._browse, width=100)
+        self.browse_btn = ctk.CTkButton(self, text="Browse", command=self.browse, width=100)
         self.browse_btn.grid(row=0, column=2)
 
-    def _browse(self):
+    def browse(self):
         if self.file_mode == "file":
             path = filedialog.askopenfilename(
                 title="Select Excel File",
@@ -128,7 +128,7 @@ class DataPreview(ctk.CTkFrame):
         title.grid(row=0, column=0, pady=(10, 5), sticky="w", padx=10)
 
         # Setup treeview with styling
-        self._setup_treeview_style()
+        self.setup_treeview_style()
 
         # Treeview
         self.tree = tk.ttk.Treeview(self)
@@ -143,7 +143,7 @@ class DataPreview(ctk.CTkFrame):
         h_scrollbar.grid(row=2, column=0, sticky="ew", padx=10)
         self.tree.configure(xscrollcommand=h_scrollbar.set)
 
-    def _setup_treeview_style(self):
+    def setup_treeview_style(self):
         """Setup treeview styling for dark theme"""
         style = tk.ttk.Style()
         style.theme_use('clam')
@@ -315,40 +315,11 @@ class ProcessingSummary(ctk.CTkFrame):
         self.processing_time_label.configure(text=f"Processing Time: {processing_time / 60:.1f} minutes")
         self.chunks_label.configure(text=f"Chunks Processed: {chunks_processed}")
 
-        # if not result_df.empty:
-        #     try:
-        #         # Convert to numeric for calculations
-        #         result_df_numeric = result_df.copy()
-        #         for col in ['Daily Frequency', 'Dose', 'Duration']:
-        #             result_df_numeric[col] = pd.to_numeric(result_df_numeric[col], errors='coerce')
-        #
-        #         # Calculate averages
-        #         avg_dose = result_df_numeric['Dose'].mean()
-        #         avg_frequency = result_df_numeric['Daily Frequency'].mean()
-        #
-        #         # Calculate success rate (non-zero values)
-        #         non_zero_doses = (result_df_numeric['Dose'] > 0).sum()
-        #         success_rate = (non_zero_doses / len(result_df_numeric)) * 100 if len(result_df_numeric) > 0 else 0
-        #
-        #
-        #     except Exception as e:
-        #         print(f"Error calculating summary stats: {e}")
-        #         self.avg_dose_label.configure(text="Avg Dose: Error")
-        #         self.avg_frequency_label.configure(text="Avg Frequency: Error")
-        #         self.success_rate_label.configure(text="Success Rate: Error")
-        # else:
-        #     self.avg_dose_label.configure(text="Avg Dose: No data")
-        #     self.avg_frequency_label.configure(text="Avg Frequency: No data")
-        #     self.success_rate_label.configure(text="Success Rate: No data")
-
     def reset(self):
         """Reset all summary values"""
         self.rows_processed_label.configure(text="Rows Processed: --")
         self.processing_time_label.configure(text="Processing Time: --")
         self.chunks_label.configure(text="Chunks Processed: --")
-        # self.avg_dose_label.configure(text="Avg Dose: --")
-        # self.avg_frequency_label.configure(text="Avg Frequency: --")
-        # self.success_rate_label.configure(text="Success Rate: --")
 
 
 class SettingsPanel(ctk.CTkFrame):
@@ -367,12 +338,12 @@ class SettingsPanel(ctk.CTkFrame):
         self.appearance_combo = ctk.CTkComboBox(
             self,
             values=["System", "Dark", "Light"],
-            command=self._change_appearance_mode,
+            command=self.change_appearance_mode,
             width=120
         )
         self.appearance_combo.grid(row=0, column=1, padx=20, pady=10, sticky="w")
         self.appearance_combo.set("Dark")
 
-    def _change_appearance_mode(self, mode: str):
+    def change_appearance_mode(self, mode: str):
         """Change appearance mode"""
         ctk.set_appearance_mode(mode)
