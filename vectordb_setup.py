@@ -1,4 +1,6 @@
 import pandas as pd
+import shutil
+
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
@@ -79,7 +81,6 @@ def build_vector_db(reference_excel_path, persist_directory="./chroma_db"):
 
     # Remove existing directory if it exists
     if os.path.exists(persist_directory):
-        import shutil
         shutil.rmtree(persist_directory)
         print(f"Removed existing vector database at {persist_directory}")
 

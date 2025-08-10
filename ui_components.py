@@ -8,7 +8,7 @@ from typing import Callable, Optional
 class FileSelectionPanel(ctk.CTkFrame):
     """Combined file selection panel with aligned inputs"""
 
-    def __init__(self, parent, file_change_callback: Optional[Callable] = None):
+    def __init__(self, parent, file_change_callback=None):
         super().__init__(parent)
         self.file_change_callback = file_change_callback
 
@@ -58,17 +58,17 @@ class FileSelectionPanel(ctk.CTkFrame):
             self.output_entry.delete(0, "end")
             self.output_entry.insert(0, path)
 
-    def get_input_path(self) -> str:
+    def get_input_path(self):
         return self.input_path or self.input_entry.get()
 
-    def get_output_path(self) -> str:
+    def get_output_path(self):
         return self.output_path or self.output_entry.get()
 
 
 class FileSelector(ctk.CTkFrame):
     """Reusable file selector component"""
 
-    def __init__(self, parent, label_text: str, placeholder: str, file_mode: str = "file"):
+    def __init__(self, parent, label_text, placeholder, file_mode="file"):
         super().__init__(parent)
         self.file_mode = file_mode
         self.selected_path = ""
@@ -102,10 +102,10 @@ class FileSelector(ctk.CTkFrame):
             self.entry.delete(0, "end")
             self.entry.insert(0, path)
 
-    def get_path(self) -> str:
+    def get_path(self):
         return self.selected_path
 
-    def set_path(self, path: str):
+    def set_path(self, path):
         self.selected_path = path
         self.entry.delete(0, "end")
         self.entry.insert(0, path)
@@ -159,7 +159,7 @@ class DataPreview(ctk.CTkFrame):
                         borderwidth=1)
         style.map('Treeview', background=[('selected', '#144870')])
 
-    def load_from_file(self, file_path: str):
+    def load_from_file(self, file_path):
         """Load and display data from file"""
         try:
             self.current_df = pd.read_excel(file_path)
@@ -168,7 +168,7 @@ class DataPreview(ctk.CTkFrame):
         except Exception as e:
             return False, f"Error loading file: {str(e)}"
 
-    def display_dataframe(self, df: pd.DataFrame, max_rows: int = 20):
+    def display_dataframe(self, df, max_rows=20):
         """Display dataframe in the treeview"""
         # Clear existing data
         self.tree.delete(*self.tree.get_children())
@@ -189,7 +189,7 @@ class DataPreview(ctk.CTkFrame):
         for index, row in display_df.iterrows():
             self.tree.insert("", "end", values=list(row))
 
-    def get_current_dataframe(self) -> pd.DataFrame:
+    def get_current_dataframe(self):
         """Get the currently loaded dataframe"""
         return self.current_df
 
@@ -197,7 +197,7 @@ class DataPreview(ctk.CTkFrame):
 class ProcessingControls(ctk.CTkFrame):
     """Processing controls component"""
 
-    def __init__(self, parent, process_callback: Callable):
+    def __init__(self, parent, process_callback):
         super().__init__(parent)
         self.process_callback = process_callback
 
@@ -235,13 +235,13 @@ class ProcessingControls(ctk.CTkFrame):
         )
         self.process_btn.grid(row=2, column=0, columnspan=2, pady=20)
 
-    def get_model(self) -> str:
+    def get_model(self):
         return self.model_combo.get()
 
-    def get_filename(self) -> str:
+    def get_filename(self):
         return self.filename_entry.get()
 
-    def set_processing_state(self, processing: bool):
+    def set_processing_state(self, processing):
         if processing:
             self.process_btn.configure(state="disabled", text="Processing...")
         else:
@@ -266,11 +266,11 @@ class StatusDisplay(ctk.CTkFrame):
         # Configure grid
         self.grid_columnconfigure(0, weight=1)
 
-    def update_progress(self, progress: float):
+    def update_progress(self, progress):
         """Update progress bar (0.0 to 1.0)"""
         self.progress_bar.set(progress)
 
-    def update_status(self, status: str):
+    def update_status(self, status):
         """Update status message"""
         self.status_label.configure(text=status)
 
@@ -303,11 +303,7 @@ class ProcessingSummary(ctk.CTkFrame):
         self.chunks_label = ctk.CTkLabel(self, text="Chunks Processed: --", font=ctk.CTkFont(size=12))
         self.chunks_label.grid(row=3, column=0, sticky="w", padx=10, pady=2)
 
-    def update_summary(self,
-                       rows_processed: int,
-                       processing_time: float,
-                       chunks_processed: int,
-                       result_df: pd.DataFrame):
+    def update_summary(self, rows_processed, processing_time, chunks_processed):
         """Update summary with processing results"""
 
         # Basic processing stats
@@ -344,6 +340,6 @@ class SettingsPanel(ctk.CTkFrame):
         self.appearance_combo.grid(row=0, column=1, padx=20, pady=10, sticky="w")
         self.appearance_combo.set("Dark")
 
-    def change_appearance_mode(self, mode: str):
+    def change_appearance_mode(self, mode):
         """Change appearance mode"""
         ctk.set_appearance_mode(mode)

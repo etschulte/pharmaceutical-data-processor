@@ -86,7 +86,7 @@ class PharmApp:
         self.settings = SettingsPanel(main_frame)
         self.settings.grid(row=7, column=0, sticky="ew", pady=20)
 
-    def on_file_selected(self, file_path: str):
+    def on_file_selected(self, file_path):
         """Handle file selection - load and preview data"""
         success, message = self.data_preview.load_from_file(file_path)
         if success:
@@ -139,7 +139,7 @@ class PharmApp:
             processor = DataProcessor(config)
 
             # Process data with progress callback
-            def progress_callback(status: str, progress: float = None):
+            def progress_callback(status, progress=None):
                 self.root.after(0, lambda: self.status_display.update_status(status))
                 if progress is not None:
                     self.root.after(0, lambda: self.status_display.update_progress(progress))
@@ -169,7 +169,7 @@ class PharmApp:
             error_msg = f"Error during processing: {e}"
             self.root.after(0, lambda: self.processing_error(error_msg))
 
-    def processing_complete(self, result_df: pd.DataFrame, processing_time: float, rows_processed: int, chunks_processed: int):
+    def processing_complete(self, result_df, processing_time, rows_processed, chunks_processed):
         """Handle processing completion"""
         self.status_display.update_progress(1.0)
         self.status_display.update_status(f"✅ Processing complete! Processed {len(result_df)} rows.")
@@ -187,7 +187,7 @@ class PharmApp:
         self.processing = False
         self.controls.set_processing_state(False)
 
-    def processing_error(self, error_msg: str):
+    def processing_error(self, error_msg):
         """Handle processing error"""
         messagebox.showerror("Processing Error", error_msg)
         self.status_display.update_status("❌ Error occurred")

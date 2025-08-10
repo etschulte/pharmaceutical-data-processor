@@ -24,7 +24,7 @@ class ProcessingConfig:
 class DataProcessor:
     """Handles the core data processing logic"""
 
-    def __init__(self, config: ProcessingConfig):
+    def __init__(self, config):
         self.config = config
         self.vectorstore = None
         self.model = None
@@ -47,16 +47,16 @@ class DataProcessor:
         # Initialize model
         self.model = self.choose_model(self.config.model_num)
 
-    def load_data(self, file_path: str):
+    def load_data(self, file_path):
         """Load data from Excel file"""
         return pd.read_excel(file_path)
 
-    def split_data_into_chunks(self, df: pd.DataFrame):
+    def split_data_into_chunks(self, df):
         """Split dataframe into processing chunks"""
         chunk_amount = math.ceil(len(df) / self.config.chunk_size)
         return np.array_split(df, chunk_amount)
 
-    def process_data(self, file_path: str, progress_callback: Optional[Callable] = None):
+    def process_data(self, file_path, progress_callback=None):
         """
         Main processing method
         file_path: Path to input Excel file
@@ -93,7 +93,7 @@ class DataProcessor:
             progress_callback("Finalizing results...")
         return self.parse_results(results)
 
-    def process_chunk(self, chunk: pd.DataFrame):
+    def process_chunk(self, chunk):
         """Process a single chunk of data"""
 
         # Convert chunk to searchable text
@@ -116,7 +116,7 @@ class DataProcessor:
 
         return result
 
-    def get_reference_examples(self, chunk_text: str) -> str:
+    def get_reference_examples(self, chunk_text):
         """Get reference examples from vector store"""
         try:
             docs = self.vectorstore.similarity_search(chunk_text, k=self.config.similarity_search_k)
@@ -166,7 +166,7 @@ class DataProcessor:
         prompt = ChatPromptTemplate.from_template(template)
         return prompt | self.model
 
-    def get_extraction_prompt(self) -> str:
+    def get_extraction_prompt(self):
         """Get the extraction prompt"""
         return (
             "For every row in the data extract the daily frequency, dose amount in mg, and duration values in numeric values. "
@@ -174,11 +174,11 @@ class DataProcessor:
             "If there are any values you are unsure of, put a 0. /no think"
         )
 
-    def get_format_instructions(self) -> str:
+    def get_format_instructions(self):
         """Get format instructions"""
         return "Comma separated list with daily frequency, dose amount in mg, and duration values. No units. New line after every row."
 
-    def parse_results(self, results: List) -> pd.DataFrame:
+    def parse_results(self, results):
         """Parse LLM results into final DataFrame"""
         parsed_rows = []
         for result in results:
@@ -190,6 +190,6 @@ class DataProcessor:
 
         return pd.DataFrame(parsed_rows, columns=['Daily Frequency', 'Dose', 'Duration'])
 
-    def save_results(self, df: pd.DataFrame, output_path: str):
+    def save_results(self, df, output_path):
         """Save results to Excel file"""
         df.to_excel(output_path, index=False)
